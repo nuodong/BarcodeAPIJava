@@ -1,44 +1,48 @@
 package com.numob.api.barcode.user;
 
-import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.*;
-import javax.servlet.http.HttpSession;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Entity
-public class User implements Serializable {
+@Entity(name = "auth_user")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    public Integer id;
+
+    public String password="";
+    public Date last_login;
+
+
+    public Boolean is_superuser = false;
 
     @Column(nullable = false)
-    public String name = "no name";
+    public String username;
 
-    @Transient
-    public String transientString;  // will not update this field in db.
+    @JsonProperty(value = "name")
+    @Column(name = "first_name", nullable = false)
+    public String first_name;
 
-    @JsonIgnore
-    public String ignoreField;  // will not in the response Json.
+    public String last_name = "";
+    public String email = "";
 
+    public Boolean is_active = true;
 
-    public User() {
+    @Column(nullable = false)
+    public Date date_joined;
+
+    public User(String username, String first_name, Date date_joined) {
+        this.username = username;
+        this.first_name = first_name;
+        this.date_joined = date_joined;
     }
-
-    public User(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    // getters and setters are hidden for brevity
 
     @Override
     public String toString() {
         return String.format(
-                "User[id=%d, name='%s']", id, name
+                "User[id=%d, username=%s, first_name=%s]", id, username, first_name
         );
     }
-
-
 
 }

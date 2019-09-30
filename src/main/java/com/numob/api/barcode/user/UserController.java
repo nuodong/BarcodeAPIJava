@@ -1,14 +1,14 @@
 package com.numob.api.barcode.user;
 
-import com.numob.api.exception.NUAPIAuthException;
-import com.numob.api.exception.NUAPIException;
+import com.numob.api.barcode.app.APIResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -19,35 +19,24 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @RequestMapping("")
-    public User detail() {
-        System.out.println("get user info" );
-        return new User((long)1, "Zhao");
-    }
+
+
     @RequestMapping("/list")
-    public List<User> list(HttpSession httpSession) throws Exception{
+    //@LoginExempt
+    public List<User> list(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception{
         System.out.println("get user list" );
-        System.out.println("get cookie"  + httpSession.getAttribute("key1"));
+        System.out.println("get cookie"  + session.getAttribute("key1"));
         String newValue = new Date().toString();
         System.out.println("set cookie"  + newValue);
-        httpSession.setAttribute("key1", newValue);
-        if (true) {
-            throw new NUAPIAuthException("Login please.", "session timeout needs login.");
-            //throw new NUAPIException("hello, nuapi message", "hello error");
-        }
+        session.setAttribute("key1", newValue);
 
-
+        APIResponseUtil.addMessageHeader(response, "HELLO, 你好");
+        APIResponseUtil.addErrorHeader(response, "HELLO, 你好错误ERROR");
         return userService.allUsers();
     }
 
     @RequestMapping("/add")
     public User save(@RequestBody User user) {
-        String format = "yyyyMMdd24HHmmss";
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        String now = sdf.format(new Date());
-        System.out.println("request: " + now);
-        System.out.println("user id: " + user.id + ", username: " + user.name);
-        System.out.println("response: " + sdf.format(new Date()));
         return userService.save(user);
     }
 
