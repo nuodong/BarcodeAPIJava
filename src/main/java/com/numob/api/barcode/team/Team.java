@@ -1,6 +1,8 @@
 package com.numob.api.barcode.team;
 
 import com.numob.api.barcode.user.User;
+import com.numob.api.barcode.utils.NUString;
+
 import javax.persistence.*;
 
 @Entity(name = "team")
@@ -9,8 +11,8 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    @OneToOne
-    public User user;
+    @Column(name = "user_id", nullable = false)
+    public Integer userId;
 
     @Column(nullable = false)
     public String identifier;
@@ -23,9 +25,13 @@ public class Team {
     @Lob
     public String note = "";
 
-    public Team(String identifier, User user, String name) {
-        this.identifier = identifier;
-        this.user = user;
+    public Team(){
+        this.identifier = NUString.UUID();
+    }
+
+    public Team(Integer userId, String name) {
+        this.identifier = NUString.UUID();
+        this.userId = userId;
         this.name = name;
     }
 

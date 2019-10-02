@@ -1,12 +1,17 @@
 package com.numob.api.barcode.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.numob.api.barcode.app.APIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -16,7 +21,31 @@ public class UserService {
     private UserExtensionRepository userExtensionRepository;
 
     @Transactional
-    public User getUserOrCreate (String username) {
+    public Map<String, Object> userLogin(HttpServletRequest request, String body) throws Exception{
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> bodyMap = mapper.readValue(body, Map.class);
+        String username = (String) bodyMap.get("username");
+
+        User user = getOrCreateUser(username);
+
+        Map user_info = new HashMap<String, String>();
+        user_info.put("user_identifier", user.userExtension.identifier);
+        user_info.put("username", username);
+        user_info.put("name", user.first_name);
+
+        Map resultMap = new HashMap<String, Object>();
+        resultMap.put("user_info", user_info);
+
+        //save session
+        HttpSession session = request.getSession();
+        session.setAttribute("user_id", user.id);
+        session.setAttribute("user_identifier", user.userExtension.identifier);
+
+        return resultMap;
+    }
+
+    @Transactional
+    public User getOrCreateUser (String username) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
             //1. new user

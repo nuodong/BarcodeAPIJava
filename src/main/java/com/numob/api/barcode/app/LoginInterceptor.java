@@ -22,15 +22,18 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object handler) throws Exception {
         if (handler instanceof HandlerMethod) {
-            //check login  if LoginExempt annotation does not exist
+
             HandlerMethod hm = (HandlerMethod) handler;
-            Integer user_id = (Integer) WebUtils.getSessionAttribute(httpServletRequest, "user_id");
-            if (user_id == null && hm.getMethodAnnotation(LoginExempt.class) == null) {
-                System.out.println("Caught a non login user.");
-                throw new LoginRequiredException();
+            //To validate user login
+            if (hm.getMethodAnnotation(LoginExempt.class) == null) {
+                Integer user_id = (Integer) WebUtils.getSessionAttribute(httpServletRequest, "user_id");
+                if (user_id == null) {
+                    throw new LoginRequiredException(); //stop here.
+                }
             }
         }
 
+        //continue to next
         return true;
     }
 }

@@ -26,11 +26,11 @@ public class UserController {
         Map<String, Object> bodyMap = mapper.readValue(body, Map.class);
         String username = (String) bodyMap.get("username");
 
-        User user = userService.getUserOrCreate(username);
+        User user = userService.getOrCreateUser(username);
         Map user_info = new HashMap<String, String>();
         user_info.put("user_identifier", user.userExtension.identifier);
         user_info.put("username", username);
-        //user_info.put("name", user.user.first_name);
+        user_info.put("name", user.first_name);
 
         Map loginResult = new HashMap<String, Object>();
         loginResult.put("user_info", user_info);
