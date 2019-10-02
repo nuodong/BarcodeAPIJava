@@ -1,10 +1,6 @@
 package com.numob.api.barcode.team;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.numob.api.barcode.user.User;
-import com.numob.api.barcode.utils.StringToJsonAttributeConverter;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hibernate.annotations.Type;

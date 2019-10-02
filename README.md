@@ -53,6 +53,8 @@ spring.resources.add-mappings=false
 * @JsonIgnore: Do not include in json response.
 * @Transient: Do not save to db
 
+### 自定义APIException
+* 继承自RuntimeException. 这样的话抛出此异常，@Transactional 才会回滚。
 
 ### Map MySQL JSON column to Object
 * See https://github.com/vladmihalcea/hibernate-types

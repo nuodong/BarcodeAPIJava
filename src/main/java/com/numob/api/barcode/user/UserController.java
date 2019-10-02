@@ -1,43 +1,45 @@
 package com.numob.api.barcode.user;
 
-import com.numob.api.barcode.app.APIResponseUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.numob.api.barcode.app.LoginExempt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
-
     @Autowired
     UserService userService;
 
+    @RequestMapping("/login")
+    @LoginExempt
+    public Map<String, Object> login(HttpServletRequest request, @RequestBody String body) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> bodyMap = mapper.readValue(body, Map.class);
+        String username = (String) bodyMap.get("username");
 
+        User user = userService.getUserOrCreate(username);
+        Map user_info = new HashMap<String, String>();
+        user_info.put("user_identifier", user.userExtension.identifier);
+        user_info.put("username", username);
+        //user_info.put("name", user.user.first_name);
 
-    @RequestMapping("/list")
-    //@LoginExempt
-    public List<User> list(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception{
-        System.out.println("get user list" );
-        System.out.println("get cookie"  + session.getAttribute("key1"));
-        String newValue = new Date().toString();
-        System.out.println("set cookie"  + newValue);
-        session.setAttribute("key1", newValue);
+        Map loginResult = new HashMap<String, Object>();
+        loginResult.put("user_info", user_info);
 
-        APIResponseUtil.addMessageHeader(response, "HELLO, 你好");
-        APIResponseUtil.addErrorHeader(response, "HELLO, 你好错误ERROR");
-        return userService.allUsers();
+        //save session
+        HttpSession session = request.getSession();
+        session.setAttribute("user_id", user.id);
+        session.setAttribute("user_identifier", user.userExtension.identifier);
+        return loginResult;
+
     }
-
-    @RequestMapping("/add")
-    public User save(@RequestBody User user) {
-        return userService.save(user);
-    }
-
 }

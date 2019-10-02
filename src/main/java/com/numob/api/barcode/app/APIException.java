@@ -3,7 +3,7 @@ package com.numob.api.barcode.app;
 /**
  * The base Numob API exception with default status 300 (API Operation failed.)
  */
-public class APIException extends Exception {
+public class APIException extends RuntimeException {
     private String message;  //message displayed to end user
     private String error;  //message for developer debug purpose
 

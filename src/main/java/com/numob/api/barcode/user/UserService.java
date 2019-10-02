@@ -1,62 +1,51 @@
 package com.numob.api.barcode.user;
 
-import com.numob.api.barcode.utils.NUString;
+import com.numob.api.barcode.app.APIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserExtensionRepository userExtensionRepository;
 
-    public User getUserByUsername (String username) {
+    @Transactional
+    public User getUserOrCreate (String username) {
         User user = userRepository.findByUsername(username);
-        return user;
-    }
-
-    public User getUserByUseID (Long id) {
-        User user = userRepository.getOne(id);
-        return user;
-    }
-
-    public User getUserOrCreate(String username) {
-        User user = getUserByUsername(username);
         if (user == null) {
-            String identifier = NUString.UUID();
+            //1. new user
             String first_name = username; //first_name defaults to username when created
             Date date_joined = new Date();
             user = new User(username, first_name, date_joined);
             user = userRepository.save(user);
+
+            //2. new user extension
+            UserExtension userExtension =  new UserExtension(user);
+            userExtensionRepository.save(userExtension);
+
+            //3. associate user extension
+            user.userExtension = userExtension;
+
+            return user;
         }
-        return  user;
+        return user;
+    }
+
+    public User getUserById (Integer id) {
+        User user = userRepository.getOne(id);
+        UserExtension userExtension = userExtensionRepository.findByUser(user);
+        user.userExtension = userExtension;
+        return user;
+
     }
 
 
 
-    public User save(User user) {
-        return  userRepository.save(user);
-    }
 
-    public List<User> allUsers() {
-        return userRepository.findAll();
-    }
-
-    /**
-     * Get the user's id from the Session.
-     * @param httpSession HttpSession
-     * @return login user's id If Login. Or throw exception if not login.
-     */
-    public String getUserID(HttpSession httpSession) {
-        String user_id = httpSession.getAttribute("user_id").toString();
-
-        if (user_id == null) {
-            return  null;
-        }
-        return user_id;
-    }
 }

@@ -27,10 +27,19 @@ public class User {
     public String last_name = "";
     public String email = "";
 
+    public Boolean is_staff = false;
     public Boolean is_active = true;
 
     @Column(nullable = false)
     public Date date_joined;
+
+
+    @OneToOne(mappedBy = "user")
+    public UserExtension userExtension;
+
+    public User(){
+
+    }
 
     public User(String username, String first_name, Date date_joined) {
         this.username = username;
@@ -41,7 +50,7 @@ public class User {
     @Override
     public String toString() {
         return String.format(
-                "User[id=%d, username=%s, first_name=%s]", id, username, first_name
+                "UserExtension[id=%d, username=%s, first_name=%s]", id, username, first_name
         );
     }
 

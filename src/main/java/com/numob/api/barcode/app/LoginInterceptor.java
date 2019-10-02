@@ -24,8 +24,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         if (handler instanceof HandlerMethod) {
             //check login  if LoginExempt annotation does not exist
             HandlerMethod hm = (HandlerMethod) handler;
-            User user = (User) WebUtils.getSessionAttribute(httpServletRequest, "user");
-            if (user == null && hm.getMethodAnnotation(LoginExempt.class) == null) {
+            Integer user_id = (Integer) WebUtils.getSessionAttribute(httpServletRequest, "user_id");
+            if (user_id == null && hm.getMethodAnnotation(LoginExempt.class) == null) {
                 System.out.println("Caught a non login user.");
                 throw new LoginRequiredException();
             }

@@ -27,7 +27,6 @@ public class WeixinReceipt {
     @Column(nullable = false, length = 20)
     public String trade_state;
 
-
     @Column(length = 11, nullable = false)
     public Integer activate_date;
 
@@ -42,7 +41,6 @@ public class WeixinReceipt {
 
     @Column(length = 11, nullable = false)
     public Integer total_fee;
-
 
     @Column(nullable = false, length = 20)
     public String bank_type;
